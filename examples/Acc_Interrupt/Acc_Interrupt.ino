@@ -20,8 +20,6 @@ void loop() {
   while(Serial.available()>0){
     char inChar = Serial.read();
     if(inChar == 'a'){
-      //icm20602_read_accel_raw();
-      //Serial.printf("0x%2X", ACC.getIntStatus());
       ACC.icm20602_read_accel(&px, &py, &pz);
       Serial.printf("Acc read: x = %.02f, y = %.02f, z = %.02f", px, py, pz);
       Serial.println();
@@ -36,7 +34,7 @@ void loop() {
   }
 }
 void icmISR( void ){
-  // Can't use I2C within ISR on 328p, so just set a flag to know that data is available
-  //Serial.printf("0x%d", ACC.getIntStatus());
   Serial.println("Interuppt!");
+  //Add interrupt code
+  
 }
