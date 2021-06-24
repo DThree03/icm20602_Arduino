@@ -34,7 +34,8 @@ void loop() {
   }
 }
 void icmISR( void ){
-  Serial.println("Interuppt!");
-  //Add interrupt code
+  //Interrupt code:
+  Serial.println("Interuppt ISR!");
   
+  ACC.getIntStatus();  //Read interuppt status register to clear interuppt
 }

@@ -151,7 +151,8 @@ void icm20602::enable_Interrupt(int pin, voidFuncPtr handler, int modex, unsigne
 		pinMode(pin, INPUT_PULLDOWN);
 	}
 	attachInterrupt(pin, handler, modex);
-	intval.bits.INT_RD_CLR  = 1;
+	intval.bits.LATCH_INT_EN = 1;		//INT pin level held until interrupt status is cleared
+	intval.bits.INT_RD_CLR  = 0;		//Interrupt status is cleared only by reading INT_STATUS register
 	i2c_write_byte(REG_INT_PIN_CFG, intval.regByte);
 	i2c_write_byte(REG_INT_ENABLE, 0xE0);
 	i2c_write_byte(REG_ACCEL_INTEL_CTRL, 0xC0);
@@ -204,8 +205,7 @@ bool icm20602::icm20602_read_gyro(float *p_x, float *p_y, float *p_z)
 }
 unsigned char icm20602::getIntStatus(void)
 {
-	unsigned char c = i2c_read_byte(REG_INT_STATUS);
-	return c;
+	return i2c_read_byte(REG_INT_STATUS);
 }
 float icm20602::getTemp(void)
 {
