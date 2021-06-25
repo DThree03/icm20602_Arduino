@@ -67,6 +67,10 @@
 #define REG_WHO_AM_I_CONST 		0x12
 #define CHIP_RESET_CONST   		0x80
 
+typedef enum interruppt_mode{
+	AUTO_CLEAR,
+	CLEAR_BY_READ,
+};
 enum icm20602_accel_dlpf {
   ICM20602_ACCEL_DLPF_218_1_HZ = 0, // data clocked at 1kHz
   ICM20602_ACCEL_DLPF_99_HZ = 2, // data clocked at 1kHz
@@ -107,28 +111,17 @@ struct icm20602_dev{
   icm20602_accel_dlpf accel_dlpf;
   icm20602_accel_g accel_g;
 };
-typedef union regPWR_MGMT_1 {
-  struct
-  {
-    unsigned DEVICE_RESET   :1;
-    unsigned SLEEP          :1;
-    unsigned CYCLE          :1;
-    unsigned GYRO_STADBY    :1;
-    unsigned TEMP_DIS	   :1;
-    unsigned CLKSEL		   :3;
-  } bits;
-  unsigned char regByte;
-} regPWR_MGMT_1_t;
+
 typedef union regINT_PIN_CFG {
   struct
   {
-    unsigned INT_LEVEL	   :1;
-    unsigned INT_OPEN       :1;
-    unsigned LATCH_INT_EN   :1;
-    unsigned INT_RD_CLR	   :1;
-    unsigned FSY_INT_LV	   :1;
-    unsigned FSY_INT_EN	   :1;
 	unsigned RESV		   :2;
+	unsigned FSY_INT_EN	   :1;
+	unsigned FSY_INT_LV	   :1;
+	unsigned INT_RD_CLR	   :1;
+	unsigned LATCH_INT_EN  :1;
+	unsigned INT_OPEN      :1;
+    unsigned INT_LEVEL	   :1;
   } bits;
   unsigned char regByte;
 } regINT_PIN_CFG_t;

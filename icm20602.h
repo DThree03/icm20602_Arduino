@@ -16,7 +16,9 @@ class icm20602
 		
 		icm20602(unsigned char ad0pinvalue);
 		int begin(void);
-		void enable_Interrupt(int pin, voidFuncPtr handler, int modex, unsigned char sentitive);
+		void enable_Interrupt(int pin, voidFuncPtr handler, int state);
+		void enable_Interrupt(int pin, voidFuncPtr handler, int state, interruppt_mode mode);
+		void ISR_Sensitive_Update(unsigned char sens);
 		bool icm20602_read_accel(float *p_x, float *p_y, float *p_z);
 		bool icm20602_read_gyro(float *p_x, float *p_y, float *p_z);
 		unsigned char getIntStatus(void);

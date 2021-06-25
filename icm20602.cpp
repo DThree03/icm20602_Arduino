@@ -138,28 +138,57 @@ int icm20602::begin(void)
 		i2c_write_byte(REG_PWR_MGMT_2, 0x00);
 	return 1;
 }
-void icm20602::enable_Interrupt(int pin, voidFuncPtr handler, int modex, unsigned char sentitive)
+void icm20602::enable_Interrupt(int pin, voidFuncPtr handler, int state, interruppt_mode mode)
 {
 	regINT_PIN_CFG_t intval;
 	intval.regByte = 0;
-	if(modex == FALLING){
+	if(state == FALLING){
 		pinMode(pin, INPUT_PULLUP);
 		intval.bits.INT_LEVEL = 1;
 		intval.bits.INT_OPEN  = 1;
 	}
-	else if(modex == RISING){
+	else if(state == RISING){
 		pinMode(pin, INPUT_PULLDOWN);
 	}
-	attachInterrupt(pin, handler, modex);
-	intval.bits.LATCH_INT_EN = 1;		//INT pin level held until interrupt status is cleared
-	intval.bits.INT_RD_CLR  = 0;		//Interrupt status is cleared only by reading INT_STATUS register
+	attachInterrupt(digitalPinToInterrupt(pin), handler, state);
+	if(mode == CLEAR_BY_READ){
+		intval.bits.LATCH_INT_EN = 1;		//INT pin level held until interrupt status is cleared
+	}
+	intval.bits.INT_RD_CLR  = 1;		//Interrupt status is cleared if any read operation
 	i2c_write_byte(REG_INT_PIN_CFG, intval.regByte);
 	i2c_write_byte(REG_INT_ENABLE, 0xE0);
 	i2c_write_byte(REG_ACCEL_INTEL_CTRL, 0xC0);
 	
-	i2c_write_byte(REG_ACCEL_WOM_X_THR, sentitive);
-	i2c_write_byte(REG_ACCEL_WOM_Y_THR, sentitive);
-	i2c_write_byte(REG_ACCEL_WOM_Z_THR, sentitive);
+	i2c_write_byte(REG_ACCEL_WOM_X_THR, 0x1F);
+	i2c_write_byte(REG_ACCEL_WOM_Y_THR, 0x1F);
+	i2c_write_byte(REG_ACCEL_WOM_Z_THR, 0x1F);
+}
+void icm20602::enable_Interrupt(int pin, voidFuncPtr handler, int state){
+	regINT_PIN_CFG_t intval;
+	intval.regByte = 0;
+	if(state == FALLING){
+		pinMode(pin, INPUT_PULLUP);
+		intval.bits.INT_LEVEL = 1;
+		intval.bits.INT_OPEN  = 1;
+	}
+	else if(state == RISING){
+		pinMode(pin, INPUT_PULLDOWN);
+	}
+	attachInterrupt(digitalPinToInterrupt(pin), handler, state);
+	intval.bits.INT_RD_CLR  = 1;		//Interrupt status is cleared if any read operation
+	i2c_write_byte(REG_INT_PIN_CFG, intval.regByte);
+	i2c_write_byte(REG_INT_ENABLE, 0xE0);
+	i2c_write_byte(REG_ACCEL_INTEL_CTRL, 0xC0);
+	
+	i2c_write_byte(REG_ACCEL_WOM_X_THR, 0x1F);
+	i2c_write_byte(REG_ACCEL_WOM_Y_THR, 0x1F);
+	i2c_write_byte(REG_ACCEL_WOM_Z_THR, 0x1F);
+}
+void icm20602::ISR_Sensitive_Update(unsigned char sens)
+{
+	i2c_write_byte(REG_ACCEL_WOM_X_THR, sens);
+	i2c_write_byte(REG_ACCEL_WOM_Y_THR, sens);
+	i2c_write_byte(REG_ACCEL_WOM_Z_THR, sens);	
 }
 bool icm20602::icm20602_read_accel(float *p_x, float *p_y, float *p_z)
 {
