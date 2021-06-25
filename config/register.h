@@ -111,7 +111,7 @@ struct icm20602_dev{
   icm20602_accel_dlpf accel_dlpf;
   icm20602_accel_g accel_g;
 };
-
+//LSB bit declare first
 typedef union regINT_PIN_CFG {
   struct
   {
